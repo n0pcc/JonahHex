@@ -44,6 +44,7 @@ PIMAGE_DOS_HEADER pDosHeader;
 PIMAGE_NT_HEADERS pNtHeaders;
 PIMAGE_OPTIONAL_HEADER pOptionalHeader;
 
+/* Used in _mcrypt_set_key (des.c) */
 DWORD AddressOfEntryPoint;
 
 void main()
@@ -63,53 +64,53 @@ void main()
 	while (1)
 	{
 		/* 
-		 * *pAddressOfCallBacks = 0;																// case 12
+		 * *pAddressOfCallBacks = 0;                                           // case 12
 		 * 
-		 * if (pPrintf == NULL)																		// case 12
-		 * 		return;																				// case 0
+		 * if (pPrintf == NULL)                                                // case 12
+		 *      return;                                                        // case 0
 		 * 
-		 * if (pScanf == NULL)																		// case 11
-		 * 		return;																				// case 0
+		 * if (pScanf == NULL)                                                 // case 11
+		 *      return;                                                        // case 0
 		 * 
-		 * if (pMemset == NULL)																		// case 18
-		 * 		return;																				// case 0
+		 * if (pMemset == NULL)                                                // case 18
+		 *      return;                                                        // case 0
 		 * 
-		 * if (pMemcpy == NULL)																		// case 5
-		 * 		return;																				// case 0
+		 * if (pMemcpy == NULL)                                                // case 5
+		 *      return;                                                        // case 0
 		 * 
-		 * if (pFree == NULL)																		// case 7
-		 * 		return;																				// case 0
+		 * if (pFree == NULL)                                                  // case 7
+		 *      return;                                                        // case 0
 		 * 
 		 * 
-		 * keyword = (char *)pCalloc(8, 1);															// case 14
+		 * keyword = (char *)pCalloc(8, 1);                                    // case 14
 		 * 
-		 * if (keyword == NULL)																		// case 14
-		 * 		return;																				// case 0
+		 * if (keyword == NULL)                                                // case 14
+		 *      return;                                                        // case 0
 		 * 
-		 * 																							// Setting up the string: case 12, 11, 18, 5, 7
-		 * pPrintf("Batcommunicator\n\nAuthenticate: ");											// Calls string enc/dec, pPrintf: case 16
+		 *                                                                     // Setting up the string: case 12, 11, 18, 5, 7
+		 * pPrintf("Batcommunicator\n\nAuthenticate: ");                       // Calls string enc/dec, pPrintf: case 16
 		 * 
-		 * 																							// Setting up the string: case 16
-		 * pScanf("%16s", &input);																	// Calls string enc/dec, pScanf: case 15
+		 *                                                                     // Setting up the string: case 16
+		 * pScanf("%16s", &input);                                             // Calls string enc/dec, pScanf: case 15
 		 * 
-		 * if (hexStr2Bytes(input, plaintext, 16) == 0)												// case 6
-		 * 		return;																				// case 0
+		 * if (hexStr2Bytes(input, plaintext, 16) == 0)                        // case 6
+		 *      return;                                                        // case 0
 		 * 
-		 * ccLoopPosition = (uint8_t *)self + 0x1000;												// case 8
-		 * ccLoopEnd = (uint8_t *)self + 0x4000;													// case 8
+		 * ccLoopPosition = (uint8_t *)self + 0x1000;                          // case 8
+		 * ccLoopEnd = (uint8_t *)self + 0x4000;                               // case 8
 		 * 
-		 * while (ccLoopEnd - ccLoopPosition + 0x500 > 0x500)										// case 9
+		 * while (ccLoopEnd - ccLoopPosition + 0x500 > 0x500)                  // case 9
 		 * {
-		 * 		if (!(*ccLoopPosition ^ 0xC2 ^ 0x11 ^ 0x1F))										// case 10
-		 * 			ccCount++;																		// case 10
+		 *      if (!(*ccLoopPosition ^ 0xC2 ^ 0x11 ^ 0x1F))                   // case 10
+		 *          ccCount++;                                                 // case 10
 		 * 
-		 * 		ccLoopPosition++;																	// case 10
+		 *      ccLoopPosition++;                                              // case 10
 		 * 
-		 * 		if (ccCount % 22 == 0)																// default
-		 * 			ccCount *= ccCount + 42;														// default
+		 *      if (ccCount % 22 == 0)                                         // default
+		 *          ccCount *= ccCount + 42;                                   // default
 		 * }
 		 * 
-		 * keyword[0] = ccCount;																	// case 0x500
+		 * keyword[0] = ccCount;                                               // case 0x500
 		 * keyword[1] = ccCount;
 		 * keyword[2] = ccCount;
 		 * keyword[3] = ccCount;
@@ -118,55 +119,55 @@ void main()
 		 * keyword[6] = ccCount;
 		 * keyword[7] = ccCount;
 		 * 
-		 * pMemcpy(ciphertext, plaintext, 8);														// case 4
-		 * *(uint32_t *)keyword ^= cipherxor;														// case 4
+		 * pMemcpy(ciphertext, plaintext, 8);                                  // case 4
+		 * *(uint32_t *)keyword ^= cipherxor;                                  // case 4
 		 * 
-		 * _mcrypt_set_key(&key, keyword, 8);														// case 19
+		 * _mcrypt_set_key(&key, keyword, 8);                                  // case 19
 		 * 
-		 * _mcrypt_encrypt(&key, ciphertext);														// case 13
+		 * _mcrypt_encrypt(&key, ciphertext);                                  // case 13
 		 * 
-		 * if ((*(DWORD *)ciphertext == (0xC2E774E2 ^ cipherxor)) 									// if else is case 17
+		 * if ((*(DWORD *)ciphertext == (0xC2E774E2 ^ cipherxor))              // if else is case 17
 		 *     && (*(DWORD *)(ciphertext+4) == (0xAB327141 ^ cipherxor)))
 		 * {
-		 * 		Zoidberg = 1;
+		 *      Zoidberg = 1;
 		 * }
 		 * else
 		 * {
-		 * 		pFree(keyword);
-		 * 		Zoidberg = 0;
+		 *      pFree(keyword);
+		 *      Zoidberg = 0;
 		 * }
 		 * 
-		 * 																							// Is in des.c as a tip to calculate
-		 * pPrintf("Communicationflag: ");															// the DES backwards after 2 rounds.
+		 *                                                                     // Is in des.c as a tip to calculate
+		 * pPrintf("Communicationflag: ");                                     // the DES backwards after 2 rounds.
 		 * 
-		 * ccLoopPosition = plaintext;																// case 1
-		 * ccLoopEnd = plaintext + 8;																// case 1
+		 * ccLoopPosition = plaintext;                                         // case 1
+		 * ccLoopEnd = plaintext + 8;                                          // case 1
 		 * 
-		 * while (ccLoopEnd - ccLoopPositioin + 0x100 > 0x100)										// case 2
+		 * while (ccLoopEnd - ccLoopPositioin + 0x100 > 0x100)                 // case 2
 		 * {
-		 * 																							// Setting up the string: case 17
-		 * 		pPrintf("%02X", *ccLoopPosition);													// Whole loop body is case 3
+		 *                                                                     // Setting up the string: case 17
+		 *      pPrintf("%02X", *ccLoopPosition);                              // Whole loop body is case 3
 		 * 
-		 * 		ccLoopPosition++;	
+		 *      ccLoopPosition++;	
 		 * }
 		 * 
-		 * ccLoopPosition = keyword;																// case 20
-		 * ccLoopEnd = keyword + 8;																	// case 20
+		 * ccLoopPosition = keyword;                                           // case 20
+		 * ccLoopEnd = keyword + 8;                                            // case 20
 		 * 
-		 * while (ccLoopEnd - ccLoopPositioin + 0x100 > 0x100)										// case 21
+		 * while (ccLoopEnd - ccLoopPositioin + 0x100 > 0x100)                 // case 21
 		 * {
-		 * 																							// Setting up the string: case 17
-		 * 		pPrintf("%02X", *ccLoopPosition);													// Whole loop body is case 22
+		 *                                                                     // Setting up the string: case 17
+		 *      pPrintf("%02X", *ccLoopPosition);                              // Whole loop body is case 22
 		 * 
-		 * 		ccLoopPosition++;	
+		 *      ccLoopPosition++;	
 		 * }
 		 * 
-		 * 																							// Setting up the string: case 0x100
-		 * pPrintf("\n\nError: No Connectivity...");												// Calls string enc/dec, pPrintf: case 0x100
+		 *                                                                     // Setting up the string: case 0x100
+		 * pPrintf("\n\nError: No Connectivity...");                           // Calls string enc/dec, pPrintf: case 0x100
 		 * 
-		 * pFree(keyword);																			// case 0x100
+		 * pFree(keyword);                                                     // case 0x100
 		 * 
-		 * return;																					// case 0
+		 * return;                                                             // case 0
 		 * 
 		 */
 
@@ -438,35 +439,35 @@ void NTAPI TlsCallback_0(PVOID handle, DWORD reason, PVOID resv)
 	while (1)
 	{
 		/*
-		 * pAddressOfCallBacks++;													// case 0
-		 * *pAddressOfCallBacks = (DWORD)&TlsCallback_1;							// case 5
-		 * pAddressOfCallBacks--;													// case 8
+		 * pAddressOfCallBacks++;                                                  // case 0
+		 * *pAddressOfCallBacks = (DWORD)&TlsCallback_1;                           // case 5
+		 * pAddressOfCallBacks--;                                                  // case 8
 		 * 
-		 * self = _GetModuleHandle(NULL);											// case 12
+		 * self = _GetModuleHandle(NULL);                                          // case 12
 		 * 
-		 * 																			// Setting up the string: case 3, 0, before while
-		 * kernel32 = _GetModuleHandle(L"kernel32.dll");							// Calls string enc/dec, _GetModuleHandle: case 10
+		 *                                                                         // Setting up the string: case 3, 0, before while
+		 * kernel32 = _GetModuleHandle(L"kernel32.dll");                           // Calls string enc/dec, _GetModuleHandle: case 10
 		 * 
 		 * // Decrypt 3 jumps in TlsCallback_1
-		 * jmpAddress = (uint32_t *)self;											// case 2
-		 * 																			// Setting up the offset (strings[7]) and decrypting it: case 4, 8
-		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[7]);		// case 7
-		 * 																			// Setting up the value (0x8) to xor: case 2
-		 * *jmpAddress ^= strings[19];												// case 7
+		 * jmpAddress = (uint32_t *)self;                                          // case 2
+		 *                                                                         // Setting up the offset (strings[7]) and decrypting it: case 4, 8
+		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[7]);    // case 7
+		 *                                                                         // Setting up the value (0x8) to xor: case 2
+		 * *jmpAddress ^= strings[19];                                             // case 7
 		 * 
-		 * 																			// Setting up the offset (strings[10]): case 10
-		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[10]);	// case 9
-		 * 																			// Setting up the value (0x40) to xor: case 6
-		 * *jmpAddress ^= strings[19];												// case 1
+		 *                                                                         // Setting up the offset (strings[10]): case 10
+		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[10]);   // case 9
+		 *                                                                         // Setting up the value (0x40) to xor: case 6
+		 * *jmpAddress ^= strings[19];                                             // case 1
 		 * 
-		 * 																			// Setting up the offset (strings[9]): case 10
-		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[9]);		// case 11
-		 * 																			// Setting up the value (0x200) to xor: case 1
-		 * *jmpAddress ^= strings[19];												// case 11
+		 *                                                                         // Setting up the offset (strings[9]): case 10
+		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[9]);    // case 11
+		 *                                                                         // Setting up the value (0x200) to xor: case 1
+		 * *jmpAddress ^= strings[19];                                             // case 11
 		 * 
-		 * pDosHeader = (PIMAGE_DOS_HEADER)self;									// default
+		 * pDosHeader = (PIMAGE_DOS_HEADER)self;                                   // default
 		 * 
-		 * return;																	// default
+		 * return;                                                                 // default
 		 */
 
 		/* 12->3->0->10->2->4->5->8->7->6->9->1->11->default */
@@ -486,7 +487,7 @@ void NTAPI TlsCallback_0(PVOID handle, DWORD reason, PVOID resv)
 				break;
 			case 1:
 				/* Next: 11 */
-				*jmpAddress ^= strings[19];												// XOR of second jump: 0x40
+				*jmpAddress ^= strings[19];                                        // XOR of second jump: 0x40
 				strings[19] <<= strings[13];
 
 				*Zoidberg *= 11;
@@ -511,8 +512,8 @@ void NTAPI TlsCallback_0(PVOID handle, DWORD reason, PVOID resv)
 				break;
 			case 4:
 				/* Next: 5 */
-				strings[7] = 0xFCFFFFE8;												// Offset to first jump has to be adjusted in code
-																						// or in the binary after code changes: stringDec(0x00001703, 1);
+				strings[7] = 0xFCFFFFE8;                                           // Offset to first jump has to be adjusted in code
+				                                                                   // or in the binary after code changes: stringDec(0x00001703, 1);
 
 				(*Zoidberg)++;
 				*Zoidberg += 2;
@@ -534,7 +535,7 @@ void NTAPI TlsCallback_0(PVOID handle, DWORD reason, PVOID resv)
 			case 7:
 				/* Next: 6 */
 				jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[7]);
-				*jmpAddress ^= strings[19];												// XOR of first jump: 0x8
+				*jmpAddress ^= strings[19];                                        // XOR of first jump: 0x8
 
 				(*Zoidberg)--;
 				break;
@@ -555,12 +556,12 @@ void NTAPI TlsCallback_0(PVOID handle, DWORD reason, PVOID resv)
 			case 10:
 				/* Next: 2 */
 				stringDec(strings, 7);
-				strings[10] = 0x00000009;												// Offset to second jump has to be adjusted in code
-																						// or in the binary after code changes: 0x0000170C
+				strings[10] = 0x00000009;                                          // Offset to second jump has to be adjusted in code
+				                                                                   // or in the binary after code changes: 0x0000170C
 				kernel32 = _GetModuleHandle((const wchar_t *)strings);
 				stringEnc(strings, 7);
-				strings[9] = 0x0000099A;												// Offset to third jump has to be adjusted in code
-																						// or in the binary after code changes: 0x000020A6
+				strings[9] = 0x0000099A;                                           // Offset to third jump has to be adjusted in code
+				                                                                   // or in the binary after code changes: 0x000020A6
 
 				Zoidberg = strings + 15;
 				(*Zoidberg)--;
@@ -569,7 +570,7 @@ void NTAPI TlsCallback_0(PVOID handle, DWORD reason, PVOID resv)
 			case 11:
 				/* Next: default */
 				jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + strings[9]);
-				*jmpAddress ^= strings[19];												// XOR of third jump: 0x200
+				*jmpAddress ^= strings[19];                                        // XOR of third jump: 0x200
 
 				(*Zoidberg)++;
 				break;
@@ -601,75 +602,92 @@ void NTAPI TlsCallback_1(PVOID handle, DWORD reason, PVOID resv)
 	while (1)
 	{
 		/* 
-		 * 																												// Setting up the string: case 8
-		 * pGetProcAddress = (FARPROC (__stdcall*)(HMODULE, LPCSTR))pGetProcAddress(kernel32, "GetProcAddress");		// Calls string enc/dec, pGetProcAddress: case 20
+		 *                                                                         // Setting up the string: case 8
+		 * pGetProcAddress = (FARPROC (__stdcall*)(HMODULE, LPCSTR))
+		 *                    pGetProcAddress(kernel32, "GetProcAddress");         // Calls string enc/dec, pGetProcAddress: case 20
 		 * 
-		 * 																												// Setting up the string: case 1
-		 * pLoadLibraryA = (HMODULE (__stdcall *)(LPCSTR))pGetProcAddress(kernel32, "LoadLibraryA");					// Calls: case 23
+		 *                                                                         // Setting up the string: case 1
+		 * pLoadLibraryA = (HMODULE (__stdcall *)(LPCSTR))
+		 *                  pGetProcAddress(kernel32, "LoadLibraryA");             // Calls: case 23
 		 * 
-		 * 																												// Setting up the string: case 14
-		 * msvcrt = pLoadLibraryA("msvcrt.dll");																		// Calls: case 26
+		 *                                                                         // Setting up the string: case 14
+		 * msvcrt = pLoadLibraryA("msvcrt.dll");                                   // Calls: case 26
 		 * 
-		 * 																												// Setting up the string: case 31
-		 * pScanf = (int (__cdecl *)(const char *, ...))pGetProcAddress(msvcrt, "scanf");								// Calls: case 17
+		 *                                                                         // Setting up the string: case 31
+		 * pScanf = (int (__cdecl *)(const char *, ...))
+		 *           pGetProcAddress(msvcrt, "scanf");                             // Calls: case 17
 		 * 
-		 * 																												// Setting up the string: case 13
-		 * pPrintf = (int (__cdecl *)(const char *, ...))pGetProcAddress(msvcrt, "printf");								// Calls: case 19
+		 *                                                                         // Setting up the string: case 13
+		 * pPrintf = (int (__cdecl *)(const char *, ...))
+		 *            pGetProcAddress(msvcrt, "printf");                           // Calls: case 19
 		 * 
-		 * 																												// Setting up the string: case 24
-		 * pCalloc = (void *(__cdecl *)(size_t, size_t))pGetProcAddress(msvcrt, "calloc");								// Calls: case 29
+		 *                                                                         // Setting up the string: case 24
+		 * pCalloc = (void *(__cdecl *)(size_t, size_t))
+		 *            pGetProcAddress(msvcrt, "calloc");                           // Calls: case 29
 		 * 
-		 * 																												// Setting up the string: case 22
-		 * pMemset = (void *(__cdecl *)(void *, int, size_t))pGetProcAddress(msvcrt, "memset");							// Calls: case 18
+		 *                                                                         // Setting up the string: case 22
+		 * pMemset = (void *(__cdecl *)(void *, int, size_t))
+		 *            pGetProcAddress(msvcrt, "memset");                           // Calls: case 18
 		 * 
-		 * 																												// Setting up the string: case 6
-		 * pMemcpy = (void *(__cdecl *)(void *, const void *, size_t))pGetProcAddress(msvcrt, "memcpy");				// Calls: case 16
+		 *                                                                         // Setting up the string: case 6
+		 * pMemcpy = (void *(__cdecl *)(void *, const void *, size_t))
+		 *            pGetProcAddress(msvcrt, "memcpy");                           // Calls: case 16
 		 * 
-		 * 																												// Setting up the string: case 10
-		 * pFree = (void (__cdecl *)(void *))pGetProcAddress(msvcrt, "free");											// Calls: case 7
+		 *                                                                         // Setting up the string: case 10
+		 * pFree = (void (__cdecl *)(void *))
+		 *          pGetProcAddress(msvcrt, "free");                               // Calls: case 7
 		 * 
-		 * pNtHeaders = (PIMAGE_NT_HEADERS)((PBYTE)self + pDosHeader->e_lfanew);										// case 7
+		 * pNtHeaders = (PIMAGE_NT_HEADERS)((PBYTE)self + pDosHeader->e_lfanew);   // case 7
 		 * 
-		 * 																												// Setting up the string: case 28
-		 * pVirtualProtect = (BOOL (WINAPI *)(LPVOID, DWORD, DWORD, PDWORD))pGetProcAddress(kernel32, "VirtualProtect");// Calls: case 5
+		 *                                                                         // Setting up the string: case 28
+		 * pVirtualProtect = (BOOL (WINAPI *)(LPVOID, DWORD, DWORD, PDWORD))
+		 *                    pGetProcAddress(kernel32, "VirtualProtect");         // Calls: case 5
 		 *
-		 * 																												// Setting up the string: case 9
-		 * pExitProcess = (void (WINAPI *)(UINT))pGetProcAddress(kernel32, "ExitProcess");								// Calls: case 11
+		 *                                                                         // Setting up the string: case 9
+		 * pExitProcess = (void (WINAPI *)(UINT))
+		 *                 pGetProcAddress(kernel32, "ExitProcess");               // Calls: case 11
 		 * 
-		 * 																												// Setting up the string: case 27
-		 * ntdll = _GetModuleHandle(L"ntdll.dll");																		// Calls: case 0
+		 *                                                                         // Setting up the string: case 27
+		 * ntdll = _GetModuleHandle(L"ntdll.dll");                                 // Calls: case 0
 		 * 
-		 * 																												// Setting up the string: case 4
-		 * DbgBreakPoint = (char *)pGetProcAddress(ntdll, "DbgBreakPoint");												// Calls: case 30
+		 *                                                                         // Setting up the string: case 4
+		 * DbgBreakPoint = (char *)pGetProcAddress(ntdll, "DbgBreakPoint");        // Calls: case 30
 		 * 
 		 * // Overwriting the int3 in DbgBreakPoint() with ret 
-		 * if (pVirtualProtect((LPVOID)DbgBreakPoint, 1, PAGE_EXECUTE_READWRITE, &dwOldProtect))						// case 30
+		 * if (pVirtualProtect((LPVOID)DbgBreakPoint,                              // case 30
+		 *     1, 
+		 *     PAGE_EXECUTE_READWRITE, 
+		 *     &dwOldProtect))
 		 * {
-		 * 		pOptionalHeader = &pNtHeaders->OptionalHeader;															// case 30
-		 *		*DbgBreakPoint = 0xC3;																					// case 30
+		 *      pOptionalHeader = &pNtHeaders->OptionalHeader;                     // case 30
+		 *      *DbgBreakPoint = 0xC3;                                             // case 30
 		 * }
 		 * 
-		 * 																												// Setting up the string: case 25
-		 * DbgUiRemoteBreakin = (char *)pGetProcAddress(ntdll, "DbgUiRemoteBreakin");									// Calls: case 21
+		 *                                                                         // Setting up the string: case 25
+		 * DbgUiRemoteBreakin = (char *)
+		 *                       pGetProcAddress(ntdll, "DbgUiRemoteBreakin");     // Calls: case 21
 		 * 
 		 * // Overwriting the int3 in DbgUiRemoteBreakin() with ret 
-		 * if (pVirtualProtect((LPVOID)DbgUiRemoteBreakin, 1, PAGE_EXECUTE_READWRITE, &dwOldProtect))					// case 21
+		 * if (pVirtualProtect((LPVOID)DbgUiRemoteBreakin,                         // case 21
+		 *     1, 
+		 *     PAGE_EXECUTE_READWRITE, 
+		 *     &dwOldProtect))
 		 * {
-		 * 		AddressOfEntryPoint = pOptionalHeader->AddressOfEntryPoint;												// case 21
-		 *		*DbgUiRemoteBreakin = 0xC3;																				// case 21
+		 *      AddressOfEntryPoint = pOptionalHeader->AddressOfEntryPoint;        // case 21
+		 *      *DbgUiRemoteBreakin = 0xC3;                                        // case 21
 		 * }
 		 * 
 		 * // Decrypt 2 jumps in main()
-		 * jmpAddress = (uint32_t *)self;																				// case 12
-		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + 0x0000217C);											// case 12
-		 * *jmpAddress ^= 0x2fe095ad;																					// case 3
+		 * jmpAddress = (uint32_t *)self;                                          // case 12
+		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + 0x0000217C);    // case 12
+		 * *jmpAddress ^= 0x2fe095ad;                                              // case 3
 		 * 
-		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + 0x0000067C);											// case 15
-		 * *jmpAddress ^= 0x1660d216;																					// case 15
+		 * jmpAddress = (uint32_t *)((unsigned char *)jmpAddress + 0x0000067C);    // case 15
+		 * *jmpAddress ^= 0x1660d216;                                              // case 15
 		 * 
-		 * main();																										// case 2
+		 * main();                                                                 // case 2
 		 * 
-		 * pExitProcess(0)																								// default
+		 * pExitProcess(0)                                                         // default
 		 */
 
 		/* 
